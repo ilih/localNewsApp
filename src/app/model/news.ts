@@ -2,6 +2,8 @@ export interface News {
   title: string;
   description: string;
   owner: string;
-  date: string;
-  locatin: string
+  date: number;
+  locatin: string;
+  point: number;
+  key: string;
 }

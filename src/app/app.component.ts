@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './services/auth.service';
+import { DataStateService } from './services/data-state.service';
 
 @Component({
   selector: 'app-root',
@@ -8,16 +8,11 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent implements OnInit {
   title = 'local news';
-  activeUser: boolean;
 
-  constructor(public auth: AuthService) { }
+  constructor(public state: DataStateService) { }
 
   ngOnInit() {
-    // this.activeUser = false;
-    this.auth.activeUser$.subscribe((data) => {
-      console.log('subject', data);
-      this.activeUser = data;
-    });
+    this.state.setUser();
   }
 }
 

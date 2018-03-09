@@ -1,48 +1,41 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from '@angular/router';
-import * as firebase from "firebase/app";
+import * as firebase from 'firebase/app';
 import { VoitService } from './voit.service';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
-interface User {
-  name: string;
-  email: string;
-  id: string;
-  location: object;
-}
+import {DataStateService} from './data-state.service';
 
 @Injectable()
 export class AuthService {
-  user: User;
-  activeUser$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     public afAuth: AngularFireAuth,
     private router: Router,
-    private voit: VoitService
+    private voit: VoitService,
+    private state: DataStateService
   ) { }
 
   get isLogin() {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('user');
   }
 
   logout() {
-    localStorage.removeItem('token');
-    this.activeUser$.next(false);
+    this.state.setUserState(false);
     this.router.navigateByUrl('login');
+    localStorage.removeItem('user');
   }
 
   login() {
     this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider()).then((data) => {
-      console.log(data.user);
-      localStorage.setItem('token', data.credential.accessToken);
-      this.user = {
+      const user = JSON.stringify({
         name: data.user.displayName,
         email: data.user.email,
         id: data.user.uid,
-        location: this.getLocationFromBrowser()
-      };
+        token: data.credential.accessToken,
+        location: JSON.stringify(this.getLocationFromBrowser())
+      });
+      localStorage.setItem('user', user);
+      this.state.setUserState(true);
 
       this.checkLocationPermissions();
 
@@ -56,39 +49,36 @@ export class AuthService {
       //   }
       // });
 
-      // console.log(this.user$);
-
-      this.activeUser$.next(true);
-      this.router.navigateByUrl('feed');
+      this.router.navigateByUrl('app');
     });
   }
 
   checkLocationPermissions() {
-    navigator.permissions.query({name:'geolocation'}).then((result) => {
-      if (result.state == 'granted') {
-        this.getLocationFromBrowser();
-        report(result.state);
-      } else if (result.state == 'prompt') {
-        report(result.state);
-      } else if (result.state == 'denied') {
-        this.router.navigateByUrl('/location');
-        report(result.state);
-      }
-    });
-
-    function report(state) {
-      console.log('Permission ' + state);
-    }
+    // navigator.permissions.query({name:'geolocation'}).then((result) => {
+    //   if (result.state == 'granted') {
+    //     this.getLocationFromBrowser();
+    //     report(result.state);
+    //   } else if (result.state == 'prompt') {
+    //     report(result.state);
+    //   } else if (result.state == 'denied') {
+    //     this.router.navigateByUrl('/location');
+    //     report(result.state);
+    //   }
+    // });
+    //
+    // function report(state) {
+    //   console.log('Permission ' + state);
+    // }
   }
 
   getLocationFromBrowser() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
-        return (position.coords)?JSON.stringify(position.coords):this.checkLocationPermissions();
+        return (position.coords) ? position.coords : this.checkLocationPermissions();
       });
     } else {
       console.log('Browser dont support navigator');
     }
-    return {}
+    return {};
   }
 }

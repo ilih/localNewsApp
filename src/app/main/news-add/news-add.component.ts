@@ -1,26 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import {AngularFireDatabase, AngularFireList, AngularFireObject} from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
+import { Component } from '@angular/core';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { News } from '../../model/news';
-import { AuthService } from '../../services/auth.service';
+import { DataStateService } from '../../services/data-state.service';
+import { User } from '../../model/user';
 
 @Component({
   selector: 'app-news-add',
   templateUrl: './news-add.component.html',
   styleUrls: ['./news-add.component.scss']
 })
-export class NewsAddComponent implements OnInit {
+export class NewsAddComponent {
   newsForm: FormGroup;
   errorMessage = '';
   itemsRef: AngularFireList<News>;
+  user: User;
 
   constructor(
     private router: Router,
     private db: AngularFireDatabase,
     private fb: FormBuilder,
-    private auth: AuthService) {
+    private state: DataStateService) {
 
     this.newsForm = fb.group({
       title: ['', Validators.minLength(3)],
@@ -28,26 +29,25 @@ export class NewsAddComponent implements OnInit {
     });
 
     this.itemsRef = db.list('news-list');
-  }
-
-  ngOnInit() {
+    this.user = this.state.user;
   }
 
   onSubmit() {
     const val = this.newsForm.value;
+
     if (val.title && val.description ) {
-      val.ownerId = this.auth.user.id;
-      val.location = this.auth.user.location;
+      val.ownerId = this.user.id;
+      val.location = this.user.location;
       val.date = Date.now();
-
-      console.log(val);
-
+      val.point = 0;
 
       this.itemsRef.push(val).then(() => {
         this.newsForm.reset();
-        // this.router.navigateByUrl('feed');
+        this.errorMessage = '';
+        this.router.navigateByUrl('app/profile');
       });
+    } else {
+      this.errorMessage = 'Pls fill correct the form';
     }
   }
-
 }
