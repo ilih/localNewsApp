@@ -1,4 +1,11 @@
-<h4>{{item.title}}</h4>
-<p>{{item.description}}</p>
-<p>{{item.point}}</p>
-<div>{{item.date | date:'medium'}}</div>
+<div class="news-detail">
+  <h4>{{item?.title}}</h4>
+  <p>{{item?.description}}</p>
+  <p>{{item?.point}}</p>
+</div>
+
+<div class="user-btn" *ngIf="userId === item?.ownerId">
+  <a routerLink="back">Back</a>
+  <button (click)="delete(item?.key)">X</button>
+  <app-news-form [item]="item" (inputsVal)="update($event, item?.key)"></app-news-form>
+</div>

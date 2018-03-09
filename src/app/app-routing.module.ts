@@ -52,6 +52,11 @@ const routes: Routes = [
           {
             path: ':id',
             component: NewsDetailComponent
+          },
+          {
+            path: '**',
+            redirectTo: '',
+            pathMatch: 'full'
           }
         ]
       },

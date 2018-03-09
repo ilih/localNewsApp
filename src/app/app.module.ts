@@ -22,6 +22,7 @@ import { VoitService } from './services/voit.service';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { DataStateService } from './services/data-state.service';
 import { MainComponent } from './main/main.component';
+import { NewsFormComponent } from './main/news-form/news-form.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { MainComponent } from './main/main.component';
     ProfileComponent,
     LocationComponent,
     NavComponent,
-    MainComponent
+    MainComponent,
+    NewsFormComponent
   ],
   imports: [
     BrowserModule,

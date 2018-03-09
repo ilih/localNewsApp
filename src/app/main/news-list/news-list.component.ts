@@ -11,7 +11,6 @@ import { DataStateService } from '../../services/data-state.service';
 export class NewsListComponent implements OnInit {
   itemsRef: AngularFireList<News>;
   newsList: News[];
-  detail = false;
 
   constructor(
     private db: AngularFireDatabase,
@@ -20,22 +19,21 @@ export class NewsListComponent implements OnInit {
     this.itemsRef = db.list('/news-list', ref => ref
       .orderByChild('ownerId')
       .equalTo(this.state.user.id)
-      .limitToLast(2));
+      .limitToLast(6));
   }
 
   ngOnInit() {
-    this.itemsRef.valueChanges().subscribe(data => {
-      this.itemsRef.snapshotChanges().subscribe(dataId => {
-        data.map(function(item, i) {
-          return item.key = dataId[i].key;
+    this.itemsRef.snapshotChanges().map(data => {
+      const newList = [];
+      if (data.length) {
+        data.forEach((item, i) => {
+          newList[i] = item.payload.val();
+          newList[i].key = item.key;
         });
-        this.newsList = data;
-        console.log(data);
-      });
+      }
+      return newList;
+    }).subscribe(data => {
+      this.newsList = data;
     });
-  }
-
-  showDetail(date) {
-    console.log(date);
   }
 }

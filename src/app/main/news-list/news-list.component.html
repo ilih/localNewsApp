@@ -1,7 +1,7 @@
-<div class="news-tem" *ngFor="let item of newsList" (click)="showDetail(item.date)">
-  <h4>{{item.title}}</h4>
-  <p>{{item.point}}</p>
-  <div>{{item.date | date:'medium'}}</div>
-
-  <app-news-detail [item]="item" *ngIf="detail"></app-news-detail>
-</div>
+<ng-container  *ngFor="let item of newsList">
+  <a class="news-tem" routerLink="{{item.key}}">
+    <h4>{{item.title}}</h4>
+    <p>{{item.point}}</p>
+    <div>{{item.date | date:'medium'}}</div>
+  </a>
+</ng-container>
