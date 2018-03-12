@@ -49,4 +49,65 @@ export class NewsDetailComponent implements OnInit {
     this.itemsRef.remove(key);
     this.router.navigateByUrl('app/profile');
   }
+
+  checkLike() {
+    let news = -1;
+    if (this.item.likeUsers) {
+      this.item.likeUsers.forEach((item, i) => {
+        if (item.user === this.item.ownerId) {
+          news = i;
+        }
+      });
+    }
+
+    return news;
+  }
+
+  like(count, key) {
+    let item = -1;
+
+    if (!this.item.likeUsers) {
+      this.item.likeUsers = [];
+    } else {
+      item = this.checkLike();
+    }
+
+    if (item >= 0) {
+      const userStatus = this.item.likeUsers[item].status;
+
+      if (userStatus !== count) {
+        switch (count) {
+          case -1:
+            if (userStatus === 0) {
+              this.item.point -= 1;
+            } else if (userStatus === 1) {
+              this.item.point -= 2;
+            }
+            break;
+          case 0:
+            if (userStatus === -1) {
+              this.item.point += 1;
+            } else if (userStatus === 1) {
+              this.item.point -= 1;
+            }
+            break;
+          case 1:
+            if (userStatus === 0) {
+              this.item.point += 1;
+            } else if (userStatus === -1) {
+              this.item.point += 2;
+            }
+            break;
+        }
+
+        this.item.likeUsers[item].status = count;
+      }
+    } else {
+      this.item.point += count;
+      this.item.likeUsers.push({user: this.item.ownerId, status: count});
+    }
+
+    this.itemsRef.set(key, this.item);
+    this.router.navigateByUrl('app/feed');
+  }
 }

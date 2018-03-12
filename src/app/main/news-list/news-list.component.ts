@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { News } from '../../model/news';
 import { DataStateService } from '../../services/data-state.service';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-news-list',
@@ -14,12 +15,17 @@ export class NewsListComponent implements OnInit {
 
   constructor(
     private db: AngularFireDatabase,
+    private route: ActivatedRoute,
+    private router: Router,
     private state: DataStateService
   ) {
-    this.itemsRef = db.list('/news-list', ref => ref
-      .orderByChild('ownerId')
-      .equalTo(this.state.user.id)
-      .limitToLast(6));
+    const parent = this.route.parent.snapshot.routeConfig.path;
+    this.itemsRef = db.list('/news-list', ref => {
+        return (parent === 'profile')
+          ? ref.orderByChild('ownerId').equalTo(this.state.user.id).limitToLast(6)
+          : ref.limitToLast(6);
+      }
+    );
   }
 
   ngOnInit() {

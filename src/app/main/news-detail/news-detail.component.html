@@ -9,3 +9,9 @@
   <button (click)="delete(item?.key)">X</button>
   <app-news-form [item]="item" (inputsVal)="update($event, item?.key)"></app-news-form>
 </div>
+
+<div class="voit-group" *ngIf="userId !== item?.ownerId">
+  <div class="voit" (click)="like(-1, item?.key)">downlike</div>
+  <div class="voit" (click)="like(0, item?.key)">skiplike</div>
+  <div class="voit" (click)="like(1, item?.key)">uplike</div>
+</div>

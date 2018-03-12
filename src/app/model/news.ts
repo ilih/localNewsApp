@@ -1,3 +1,8 @@
+interface Like {
+  user: string;
+  status: number;
+}
+
 export interface News {
   title: string;
   description: string;
@@ -5,5 +10,6 @@ export interface News {
   date: number;
   location?: string;
   point: number;
+  likeUsers?: Like[];
   key?: string;
 }
