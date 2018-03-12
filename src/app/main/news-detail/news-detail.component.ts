@@ -50,26 +50,18 @@ export class NewsDetailComponent implements OnInit {
     this.router.navigateByUrl('app/profile');
   }
 
-  checkLike() {
-    let news = -1;
-    if (this.item.likeUsers) {
-      this.item.likeUsers.forEach((item, i) => {
-        if (item.user === this.item.ownerId) {
-          news = i;
-        }
-      });
-    }
-
-    return news;
-  }
-
   like(count, key) {
     let item = -1;
 
     if (!this.item.likeUsers) {
       this.item.likeUsers = [];
     } else {
-      item = this.checkLike();
+      for (let i = 0; i < this.item.likeUsers.length; i++) {
+        if (this.item.likeUsers[i].user === this.item.ownerId) {
+          item = i;
+          break;
+        }
+      }
     }
 
     if (item >= 0) {
