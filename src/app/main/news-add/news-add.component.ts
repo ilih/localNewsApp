@@ -31,7 +31,8 @@ export class NewsAddComponent {
       ownerId: this.user.id,
       location: this.user.location,
       date: Date.now(),
-      point: 0
+      point: 0,
+      upload: e.upload
     };
 
     this.itemsRef.push(this.newsItem).then(() => {

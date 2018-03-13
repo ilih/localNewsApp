@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
-import { VoitService } from './voit.service';
 import {DataStateService} from './data-state.service';
 
 @Injectable()
@@ -11,7 +10,6 @@ export class AuthService {
   constructor(
     public afAuth: AngularFireAuth,
     private router: Router,
-    private voit: VoitService,
     private state: DataStateService
   ) { }
 

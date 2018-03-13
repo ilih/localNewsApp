@@ -3,6 +3,8 @@ import {News} from '../../model/news';
 import {AngularFireDatabase, AngularFireList} from 'angularfire2/database';
 import {DataStateService} from '../../services/data-state.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {AngularFireStorage} from 'angularfire2/storage';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-news-detail',
@@ -14,11 +16,16 @@ export class NewsDetailComponent implements OnInit {
   item: News;
   userId: string;
 
+  uploadPercent: Observable<number>;
+  downloadURL: Observable<string>;
+  refName: string;
+
   constructor(
     private db: AngularFireDatabase,
     private state: DataStateService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private storage: AngularFireStorage
   ) {
     this.userId = this.state.user.id;
     const id = this.route.snapshot.paramMap.get('id');
@@ -42,12 +49,37 @@ export class NewsDetailComponent implements OnInit {
   update(e, key) {
     this.item.title = e.title;
     this.item.description = e.description;
+
+    this.saveImage();
+    this.downloadURL.take(1).subscribe(data => {
+      this.item.upload = {
+        url: data,
+        name: e.upload['name'],
+        ref: this.refName
+      };
+    });
     this.itemsRef.set(key, this.item);
   }
 
   delete(key) {
-    this.itemsRef.remove(key);
     this.router.navigateByUrl('app/profile');
+    this.itemsRef.remove(key);
+    this.deleteImage();
+  }
+
+  deleteImage() {
+    this.storage.storage.ref().child(this.item.upload.ref).delete();
+  }
+
+  updateImage() {
+
+  }
+
+  saveImage() {
+    this.refName = 'news/' + Date.now() + '_' + this.selectedFiles['name'];
+    const task = this.storage.upload(this.refName, this.selectedFiles);
+    this.uploadPercent = task.percentageChanges();
+    this.downloadURL = task.downloadURL();
   }
 
   like(count, key) {

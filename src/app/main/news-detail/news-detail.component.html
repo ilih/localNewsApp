@@ -2,7 +2,16 @@
   <h4>{{item?.title}}</h4>
   <p>{{item?.description}}</p>
   <p>{{item?.point}}</p>
+  <img src="{{item?.upload.url}}" alt="{{item?.upload.name}}">
 </div>
+
+
+<h4 class="error">{{errorMessage}}</h4>
+<div *ngIf="uploadPercent">
+  <progress class="progress is-success" min=1 max=100 value="{{uploadPercent | async}}"></progress>
+  {{uploadPercent | async}}%
+</div>
+
 
 <div class="user-btn" *ngIf="userId === item?.ownerId">
   <a routerLink="back">Back</a>
@@ -11,7 +20,7 @@
 </div>
 
 <div class="voit-group" *ngIf="userId !== item?.ownerId">
-  <div class="voit" (click)="like(-1, item?.key)">downlike</div>
-  <div class="voit" (click)="like(0, item?.key)">skiplike</div>
-  <div class="voit" (click)="like(1, item?.key)">uplike</div>
+  <button (click)="like(-1, item?.key)">downlike</button>
+  <button (click)="like(0, item?.key)">skiplike</button>
+  <button (click)="like(1, item?.key)">uplike</button>
 </div>

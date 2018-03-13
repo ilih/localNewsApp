@@ -1,3 +1,5 @@
+import {Image} from './image';
+
 interface Like {
   user: string;
   status: number;
@@ -12,4 +14,5 @@ export interface News {
   point: number;
   likeUsers?: Like[];
   key?: string;
+  upload?: Image;
 }

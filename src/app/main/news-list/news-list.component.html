@@ -3,5 +3,6 @@
     <h4>{{item.title}}</h4>
     <p>{{item.point}}</p>
     <div>{{item.date | date:'medium'}}</div>
+    <img src="{{item.upload?.url}}" alt="{{item.upload?.name}}">
   </a>
 </ng-container>

@@ -1,6 +1,7 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {News} from '../../model/news';
+import 'rxjs/add/operator/take';
 
 @Component({
   selector: 'app-news-form',
@@ -13,7 +14,11 @@ export class NewsFormComponent implements OnInit {
   @Input() item: News;
   @Output() inputsVal = new EventEmitter();
 
-  constructor(private fb: FormBuilder) {
+  selectedFiles: FileList | null;
+
+  constructor(
+    private fb: FormBuilder
+  ) {
     this.newsForm = fb.group({
       title: ['', Validators.minLength(3)],
       description: ['', Validators.minLength(3)]
@@ -29,9 +34,14 @@ export class NewsFormComponent implements OnInit {
     }
   }
 
+  getImage(e) {
+    this.selectedFiles = e.target.files[0];
+  }
+
   onSubmit() {
     const val = this.newsForm.value;
     if (val.title && val.description ) {
+      val.image = this.selectedFiles;
       this.inputsVal.emit(val);
       this.newsForm.reset();
     } else {
