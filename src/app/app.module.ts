@@ -24,6 +24,8 @@ import {MainComponent} from './main/main.component';
 import {NewsFormComponent} from './main/news-form/news-form.component';
 import {AngularFirestoreModule} from 'angularfire2/firestore';
 import {AngularFireStorage} from 'angularfire2/storage';
+import {UploadService} from './services/upload.service';
+import { ProgressComponent } from './main/progress/progress.component';
 
 
 @NgModule({
@@ -39,7 +41,8 @@ import {AngularFireStorage} from 'angularfire2/storage';
     LocationComponent,
     NavComponent,
     MainComponent,
-    NewsFormComponent
+    NewsFormComponent,
+    ProgressComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +59,8 @@ import {AngularFireStorage} from 'angularfire2/storage';
     AppGuard,
     AuthService,
     DataStateService,
-    AngularFireStorage
+    AngularFireStorage,
+    UploadService
   ],
   bootstrap: [AppComponent]
 })

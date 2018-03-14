@@ -4,28 +4,27 @@ import {AngularFireDatabase, AngularFireList} from 'angularfire2/database';
 import {DataStateService} from '../../services/data-state.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AngularFireStorage} from 'angularfire2/storage';
-import {Observable} from 'rxjs/Observable';
+import {UploadService} from '../../services/upload.service';
 
 @Component({
   selector: 'app-news-detail',
   templateUrl: './news-detail.component.html',
-  styleUrls: ['./news-detail.component.scss']
+  styleUrls: ['./news-detail.component.scss'],
+  providers: [UploadService]
 })
 export class NewsDetailComponent implements OnInit {
   itemsRef: AngularFireList<News>;
   item: News;
   userId: string;
-
-  uploadPercent: Observable<number>;
-  downloadURL: Observable<string>;
-  refName: string;
+  uploadPercent: number;
 
   constructor(
     private db: AngularFireDatabase,
     private state: DataStateService,
     private route: ActivatedRoute,
     private router: Router,
-    private storage: AngularFireStorage
+    private storage: AngularFireStorage,
+    private uploadSrv: UploadService
   ) {
     this.userId = this.state.user.id;
     const id = this.route.snapshot.paramMap.get('id');
@@ -50,36 +49,18 @@ export class NewsDetailComponent implements OnInit {
     this.item.title = e.title;
     this.item.description = e.description;
 
-    this.saveImage();
-    this.downloadURL.take(1).subscribe(data => {
-      this.item.upload = {
-        url: data,
-        name: e.upload['name'],
-        ref: this.refName
-      };
+    this.uploadSrv.update(e.image, this.item.upload.ref);
+    this.uploadSrv.uploadPercent.subscribe(data => this.uploadPercent = data);
+    this.uploadSrv.imageObj$.subscribe(data => {
+      this.item.upload = data;
+      this.itemsRef.set(key, this.item);
     });
-    this.itemsRef.set(key, this.item);
   }
 
   delete(key) {
     this.router.navigateByUrl('app/profile');
     this.itemsRef.remove(key);
-    this.deleteImage();
-  }
-
-  deleteImage() {
-    this.storage.storage.ref().child(this.item.upload.ref).delete();
-  }
-
-  updateImage() {
-
-  }
-
-  saveImage() {
-    this.refName = 'news/' + Date.now() + '_' + this.selectedFiles['name'];
-    const task = this.storage.upload(this.refName, this.selectedFiles);
-    this.uploadPercent = task.percentageChanges();
-    this.downloadURL = task.downloadURL();
+    this.uploadSrv.delete(this.item.upload.ref);
   }
 
   like(count, key) {

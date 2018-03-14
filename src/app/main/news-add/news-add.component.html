@@ -1,1 +1,4 @@
 <app-news-form (inputsVal)="addNews($event)"></app-news-form>
+
+<!--<h4 class="error">{{errorMessage}}</h4>-->
+<app-progress *ngIf="uploadPercent" [percent]="uploadPercent"></app-progress>

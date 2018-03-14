@@ -6,11 +6,8 @@
 </div>
 
 
-<h4 class="error">{{errorMessage}}</h4>
-<div *ngIf="uploadPercent">
-  <progress class="progress is-success" min=1 max=100 value="{{uploadPercent | async}}"></progress>
-  {{uploadPercent | async}}%
-</div>
+<!--<h4 class="error">{{errorMessage}}</h4>-->
+<app-progress *ngIf="uploadPercent" [percent]="uploadPercent"></app-progress>
 
 
 <div class="user-btn" *ngIf="userId === item?.ownerId">
